@@ -11,6 +11,7 @@ included at top level for easy grep/filter.
 
 import json
 import logging
+import os
 from pathlib import Path
 
 from loguru import logger
@@ -73,6 +74,17 @@ def configure_logging(log_file: str, *, force: bool = False) -> None:
 
     # Remove default loguru handler (writes to stderr)
     logger.remove()
+
+    # On Vercel, we only use stderr logging and skip file operations
+    if os.environ.get("VERCEL"):
+        # Add stderr sink with our custom formatter
+        import sys
+        logger.add(
+            sys.stderr,
+            level="DEBUG",
+            format=_serialize_with_context,
+        )
+        return
 
     # Truncate log file on fresh start for clean debugging
     Path(log_file).write_text("")

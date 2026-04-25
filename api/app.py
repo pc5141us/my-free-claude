@@ -21,6 +21,10 @@ from .routes import router
 # Opt-in to future behavior for python-telegram-bot
 os.environ["PTB_TIMEDELTA"] = "1"
 
+# Set tiktoken cache to /tmp on Vercel (read-only filesystem workaround)
+if os.environ.get("VERCEL"):
+    os.environ["TIKTOKEN_CACHE_DIR"] = "/tmp"
+
 # Configure logging first (before any module logs)
 _settings = get_settings()
 configure_logging(_settings.log_file)
