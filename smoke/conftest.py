@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from typing import Optional
+
+
 from collections.abc import Iterator
 
 import pytest
@@ -72,4 +75,4 @@ def smoke_headers() -> dict[str, str]:
     return auth_headers()
 
 
-_REPORT: SmokeReport | None = None
+_REPORT: Optional[SmokeReport] = None

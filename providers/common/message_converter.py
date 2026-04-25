@@ -1,7 +1,10 @@
+from __future__ import annotations
+
+
 """Message and tool format converters."""
 
 import json
-from typing import Any
+from typing import Optional, Any
 
 
 def get_block_attr(block: Any, attr: str, default: Any = None) -> Any:
@@ -13,7 +16,7 @@ def get_block_attr(block: Any, attr: str, default: Any = None) -> Any:
     return default
 
 
-def get_block_type(block: Any) -> str | None:
+def get_block_type(block: Any) -> Optional[str]:
     """Get block type from object or dict."""
     return get_block_attr(block, "type")
 
@@ -196,7 +199,7 @@ class AnthropicToOpenAIConverter:
         return tool_choice
 
     @staticmethod
-    def convert_system_prompt(system: Any) -> dict[str, str] | None:
+    def convert_system_prompt(system: Any) -> dict[str, Optional[str]]:
         """Convert Anthropic system prompt to OpenAI format."""
         if isinstance(system, str):
             return {"role": "system", "content": system}
@@ -214,7 +217,7 @@ class AnthropicToOpenAIConverter:
 def build_base_request_body(
     request_data: Any,
     *,
-    default_max_tokens: int | None = None,
+    default_max_tokens: Optional[int] = None,
     include_thinking: bool = True,
     include_reasoning_for_openrouter: bool = False,
     include_reasoning_content: bool = False,

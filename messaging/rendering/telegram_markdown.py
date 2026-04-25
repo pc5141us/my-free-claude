@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 """Telegram MarkdownV2 utilities.
 
 Renders common Markdown into Telegram MarkdownV2 format.
@@ -94,7 +98,7 @@ def mdv2_code_inline(text: str) -> str:
     return f"`{escape_md_v2_code(text)}`"
 
 
-def format_status(emoji: str, label: str, suffix: str | None = None) -> str:
+def format_status(emoji: str, label: str, suffix: Optional[str] = None) -> str:
     """Format a status message with emoji and optional suffix."""
     base = f"{emoji} {mdv2_bold(label)}"
     if suffix:
@@ -192,7 +196,7 @@ def render_markdown_to_mdv2(text: str) -> str:
 
     out: list[str] = []
     list_stack: list[dict] = []
-    pending_prefix: str | None = None
+    pending_prefix: Optional[str] = None
     blockquote_level = 0
     in_heading = False
 

@@ -1,10 +1,13 @@
+from __future__ import annotations
+
+
 """Shared base class for OpenAI-compatible providers (NIM, OpenRouter, LM Studio)."""
 
 import json
 import uuid
 from abc import abstractmethod
 from collections.abc import AsyncIterator, Iterator
-from typing import Any
+from typing import Optional, Any
 
 import httpx
 from loguru import logger
@@ -84,7 +87,7 @@ class OpenAICompatibleProvider(BaseProvider):
         """Hook for provider-specific reasoning (e.g. OpenRouter reasoning_details)."""
         return iter(())
 
-    def _get_retry_request_body(self, error: Exception, body: dict) -> dict | None:
+    def _get_retry_request_body(self, error: Exception, body: dict) -> Optional[dict]:
         """Return a modified request body for one retry, or None."""
         return None
 
@@ -151,7 +154,7 @@ class OpenAICompatibleProvider(BaseProvider):
         request: Any,
         input_tokens: int = 0,
         *,
-        request_id: str | None = None,
+        request_id: Optional[str] = None,
     ) -> AsyncIterator[str]:
         """Stream response in Anthropic SSE format."""
         with logger.contextualize(request_id=request_id):
@@ -164,7 +167,7 @@ class OpenAICompatibleProvider(BaseProvider):
         self,
         request: Any,
         input_tokens: int,
-        request_id: str | None,
+        request_id: Optional[str],
     ) -> AsyncIterator[str]:
         """Shared streaming implementation."""
         tag = self._provider_name

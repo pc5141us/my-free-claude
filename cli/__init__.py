@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """CLI integration for Claude Code."""
 
 from .manager import CLISessionManager

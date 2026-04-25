@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Tests for providers/nvidia_nim/utils/sse_builder.py."""
 
 import json

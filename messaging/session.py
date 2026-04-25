@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """
 Session Store for Messaging Platforms
 
@@ -32,11 +35,11 @@ class SessionStore:
         self._message_log: dict[str, list[dict[str, Any]]] = {}
         self._message_log_ids: dict[str, set[str]] = {}
         self._dirty = False
-        self._save_timer: threading.Timer | None = None
+        self._save_timer: Optional[threading.Timer] = None
         self._save_debounce_secs = 0.5
         cap_raw = os.getenv("MAX_MESSAGE_LOG_ENTRIES_PER_CHAT", "").strip()
         try:
-            self._message_log_cap: int | None = int(cap_raw) if cap_raw else None
+            self._message_log_cap: Optional[int] = int(cap_raw) if cap_raw else None
         except ValueError:
             self._message_log_cap = None
         self._load()
@@ -242,7 +245,7 @@ class SessionStore:
             self._schedule_save()
             logger.debug(f"Saved tree {root_id}")
 
-    def get_tree(self, root_id: str) -> dict | None:
+    def get_tree(self, root_id: str) -> Optional[dict]:
         """Get a tree by its root ID."""
         with self._lock:
             return self._trees.get(root_id)

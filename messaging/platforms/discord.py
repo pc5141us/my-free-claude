@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """
 Discord Platform Adapter
 
@@ -10,7 +13,7 @@ import os
 import tempfile
 from collections.abc import Awaitable, Callable
 from pathlib import Path
-from typing import Any, cast
+from typing import Optional, Any, cast
 
 from loguru import logger
 
@@ -43,7 +46,7 @@ def _get_discord() -> Any:
     return _discord_module
 
 
-def _parse_allowed_channels(raw: str | None) -> set[str]:
+def _parse_allowed_channels(raw: Optional[str]) -> set[str]:
     """Parse comma-separated channel IDs into a set of strings."""
     if not raw or not raw.strip():
         return set()
@@ -88,8 +91,8 @@ class DiscordPlatform(MessagingPlatform):
 
     def __init__(
         self,
-        bot_token: str | None = None,
-        allowed_channel_ids: str | None = None,
+        bot_token: Optional[str] = None,
+        allowed_channel_ids: Optional[str] = None,
     ):
         if not DISCORD_AVAILABLE:
             raise ImportError(
@@ -109,12 +112,12 @@ class DiscordPlatform(MessagingPlatform):
 
         assert _DiscordClient is not None
         self._client = _DiscordClient(self, intents)
-        self._message_handler: Callable[[IncomingMessage], Awaitable[None]] | None = (
+        self._message_handler: Callable[[IncomingMessage], Optional[Awaitable[None]]] = (
             None
         )
         self._connected = False
-        self._limiter: Any | None = None
-        self._start_task: asyncio.Task | None = None
+        self._limiter: Optional[Any] = None
+        self._start_task: Optional[asyncio.Task] = None
         self._pending_voice: dict[tuple[str, str], tuple[str, str]] = {}
         self._pending_voice_lock = asyncio.Lock()
 
@@ -135,7 +138,7 @@ class DiscordPlatform(MessagingPlatform):
 
     async def cancel_pending_voice(
         self, chat_id: str, reply_id: str
-    ) -> tuple[str, str] | None:
+    ) -> tuple[str, Optional[str]]:
         """Cancel a pending voice transcription. Returns (voice_msg_id, status_msg_id) if found."""
         async with self._pending_voice_lock:
             entry = self._pending_voice.pop((chat_id, reply_id), None)
@@ -151,7 +154,7 @@ class DiscordPlatform(MessagingPlatform):
         async with self._pending_voice_lock:
             return (chat_id, voice_msg_id) in self._pending_voice
 
-    def _get_audio_attachment(self, message: Any) -> Any | None:
+    def _get_audio_attachment(self, message: Any) -> Optional[Any]:
         """Return first audio attachment, or None."""
         for att in message.attachments:
             ct = (att.content_type or "").lower()
@@ -382,9 +385,9 @@ class DiscordPlatform(MessagingPlatform):
         self,
         chat_id: str,
         text: str,
-        reply_to: str | None = None,
-        parse_mode: str | None = None,
-        message_thread_id: str | None = None,
+        reply_to: Optional[str] = None,
+        parse_mode: Optional[str] = None,
+        message_thread_id: Optional[str] = None,
     ) -> str:
         """Send a message to a channel."""
         channel = self._client.get_channel(int(chat_id))
@@ -411,7 +414,7 @@ class DiscordPlatform(MessagingPlatform):
         chat_id: str,
         message_id: str,
         text: str,
-        parse_mode: str | None = None,
+        parse_mode: Optional[str] = None,
     ) -> None:
         """Edit an existing message."""
         channel = self._client.get_channel(int(chat_id))
@@ -455,11 +458,11 @@ class DiscordPlatform(MessagingPlatform):
         self,
         chat_id: str,
         text: str,
-        reply_to: str | None = None,
-        parse_mode: str | None = None,
+        reply_to: Optional[str] = None,
+        parse_mode: Optional[str] = None,
         fire_and_forget: bool = True,
-        message_thread_id: str | None = None,
-    ) -> str | None:
+        message_thread_id: Optional[str] = None,
+    ) -> Optional[str]:
         """Enqueue a message to be sent."""
         if not self._limiter:
             return await self.send_message(
@@ -481,7 +484,7 @@ class DiscordPlatform(MessagingPlatform):
         chat_id: str,
         message_id: str,
         text: str,
-        parse_mode: str | None = None,
+        parse_mode: Optional[str] = None,
         fire_and_forget: bool = True,
     ) -> None:
         """Enqueue a message edit."""

@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Shared utility helpers for provider request builders."""
 
 from typing import Any

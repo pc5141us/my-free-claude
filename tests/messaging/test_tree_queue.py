@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Tests for tree-based message queue system."""
 
 import asyncio

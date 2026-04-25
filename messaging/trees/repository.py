@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 """Repository for message tree data access.
 
 Provides data access layer for managing trees and node mappings.
@@ -19,18 +23,18 @@ class TreeRepository:
         self._trees: dict[str, MessageTree] = {}  # root_id -> tree
         self._node_to_tree: dict[str, str] = {}  # node_id -> root_id
 
-    def get_tree(self, root_id: str) -> MessageTree | None:
+    def get_tree(self, root_id: str) -> Optional[MessageTree]:
         """Get a tree by its root ID."""
         return self._trees.get(root_id)
 
-    def get_tree_for_node(self, node_id: str) -> MessageTree | None:
+    def get_tree_for_node(self, node_id: str) -> Optional[MessageTree]:
         """Get the tree containing a given node."""
         root_id = self._node_to_tree.get(node_id)
         if not root_id:
             return None
         return self._trees.get(root_id)
 
-    def get_node(self, node_id: str) -> MessageNode | None:
+    def get_node(self, node_id: str) -> Optional[MessageNode]:
         """Get a node from any tree."""
         tree = self.get_tree_for_node(node_id)
         return tree.get_node(node_id) if tree else None
@@ -69,7 +73,7 @@ class TreeRepository:
         tree = self.get_tree_for_node(node_id)
         return tree.get_queue_size() if tree else 0
 
-    def resolve_parent_node_id(self, msg_id: str) -> str | None:
+    def resolve_parent_node_id(self, msg_id: str) -> Optional[str]:
         """
         Resolve a message ID to the actual parent node ID.
 
@@ -134,7 +138,7 @@ class TreeRepository:
         for nid in node_ids:
             self._node_to_tree.pop(nid, None)
 
-    def remove_tree(self, root_id: str) -> MessageTree | None:
+    def remove_tree(self, root_id: str) -> Optional[MessageTree]:
         """
         Remove a tree and all its node mappings from the repository.
 

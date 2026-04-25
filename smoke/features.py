@@ -1,10 +1,12 @@
+from __future__ import annotations
+
+
 """Feature inventory used by the local smoke suite.
 
 This file is intentionally explicit: advertised features should not exist only
 in README prose without at least one smoke check or a documented manual gap.
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 

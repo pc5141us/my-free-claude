@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Tests for Discord platform adapter."""
 
 import asyncio

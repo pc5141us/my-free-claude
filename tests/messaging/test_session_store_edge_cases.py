@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Edge case tests for messaging/session.py SessionStore."""
 
 import json

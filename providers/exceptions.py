@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Unified exception hierarchy for providers."""
 
 from typing import Any

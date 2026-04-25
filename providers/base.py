@@ -1,8 +1,11 @@
+from __future__ import annotations
+
+
 """Base provider interface - extend this to implement your own provider."""
 
 from abc import ABC, abstractmethod
 from collections.abc import AsyncIterator
-from typing import Any
+from typing import Optional, Any
 
 from pydantic import BaseModel
 
@@ -15,8 +18,8 @@ class ProviderConfig(BaseModel):
     """
 
     api_key: str
-    base_url: str | None = None
-    rate_limit: int | None = None
+    base_url: Optional[str] = None
+    rate_limit: Optional[int] = None
     rate_window: int = 60
     max_concurrency: int = 5
     http_read_timeout: float = 300.0
@@ -52,7 +55,7 @@ class BaseProvider(ABC):
         request: Any,
         input_tokens: int = 0,
         *,
-        request_id: str | None = None,
+        request_id: Optional[str] = None,
     ) -> AsyncIterator[str]:
         """Stream response in Anthropic SSE format."""
         if False:

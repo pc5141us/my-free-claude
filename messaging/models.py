@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Platform-agnostic message models."""
 
 from dataclasses import dataclass, field
@@ -20,12 +23,12 @@ class IncomingMessage:
     platform: str  # "telegram", "discord", "slack", etc.
 
     # Optional fields
-    reply_to_message_id: str | None = None
+    reply_to_message_id: Optional[str] = None
     # Forum topic ID (Telegram); required when replying in forum supergroups
-    message_thread_id: str | None = None
-    username: str | None = None
+    message_thread_id: Optional[str] = None
+    username: Optional[str] = None
     # Pre-sent status message ID (e.g. "Transcribing voice note..."); handler edits in place
-    status_message_id: str | None = None
+    status_message_id: Optional[str] = None
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     # Platform-specific raw event for edge cases

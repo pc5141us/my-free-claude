@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Concurrency and race condition tests for tree data structures and queue manager."""
 
 import asyncio

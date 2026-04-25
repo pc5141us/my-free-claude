@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 import pytest
 
 from providers.common import ContentType, HeuristicToolParser, ThinkTagParser

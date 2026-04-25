@@ -1,12 +1,14 @@
+from __future__ import annotations
+
+
 """Command handlers for messaging platform commands (/stop, /stats, /clear).
 
 Extracted from ClaudeMessageHandler to keep handler.py focused on
 core message processing logic.
 """
 
-from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 from loguru import logger
 
@@ -97,7 +99,7 @@ async def _delete_message_ids(
     if not msg_ids:
         return
 
-    def _as_int(s: str) -> int | None:
+    def _as_int(s: str) -> Optional[int]:
         try:
             return int(str(s))
         except Exception:

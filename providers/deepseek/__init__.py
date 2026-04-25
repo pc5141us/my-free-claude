@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """DeepSeek provider exports."""
 
 from .client import DEEPSEEK_BASE_URL, DeepSeekProvider

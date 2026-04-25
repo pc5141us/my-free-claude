@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 """
 Claude Message Handler
 
@@ -87,7 +91,7 @@ _EVENT_STATUS_MAP = {
 }
 
 
-def _get_status_for_event(ptype: str, parsed: dict, format_status_fn) -> str | None:
+def _get_status_for_event(ptype: str, parsed: dict, format_status_fn) -> Optional[str]:
     """Return status string for event type, or None if no status update needed."""
     entry = _EVENT_STATUS_MAP.get(ptype)
     if entry is not None:
@@ -128,7 +132,7 @@ class ClaudeMessageHandler:
         self._format_status_fn = (
             format_status_discord if is_discord else format_status_telegram
         )
-        self._parse_mode_val: str | None = None if is_discord else "MarkdownV2"
+        self._parse_mode_val: Optional[str] = None if is_discord else "MarkdownV2"
         self._render_ctx_val = RenderCtx(
             bold=discord_bold if is_discord else mdv2_bold,
             code_inline=discord_code_inline if is_discord else mdv2_code_inline,
@@ -140,10 +144,10 @@ class ClaudeMessageHandler:
         )
         self._limit_chars = 1900 if is_discord else 3900
 
-    def format_status(self, emoji: str, label: str, suffix: str | None = None) -> str:
+    def format_status(self, emoji: str, label: str, suffix: Optional[str] = None) -> str:
         return self._format_status_fn(emoji, label, suffix)
 
-    def _parse_mode(self) -> str | None:
+    def _parse_mode(self) -> Optional[str]:
         return self._parse_mode_val
 
     def get_render_ctx(self) -> RenderCtx:
@@ -369,11 +373,11 @@ class ClaudeMessageHandler:
     async def _handle_session_info_event(
         self,
         event_data: dict,
-        tree: MessageTree | None,
+        tree: Optional[MessageTree],
         node_id: str,
-        captured_session_id: str | None,
-        temp_session_id: str | None,
-    ) -> tuple[str | None, str | None]:
+        captured_session_id: Optional[str],
+        temp_session_id: Optional[str],
+    ) -> Optional[tuple[str], Optional[str]]:
         """Handle session_info event; return updated (captured_session_id, temp_session_id)."""
         if event_data.get("type") != "session_info":
             return captured_session_id, temp_session_id
@@ -400,12 +404,12 @@ class ClaudeMessageHandler:
         parsed: dict,
         transcript: TranscriptBuffer,
         update_ui,
-        last_status: str | None,
+        last_status: Optional[str],
         had_transcript_events: bool,
-        tree: MessageTree | None,
+        tree: Optional[MessageTree],
         node_id: str,
-        captured_session_id: str | None,
-    ) -> tuple[str | None, bool]:
+        captured_session_id: Optional[str],
+    ) -> Optional[tuple[str], bool]:
         """Process a single parsed CLI event. Returns (last_status, had_transcript_events)."""
         ptype = parsed.get("type") or ""
 
@@ -477,7 +481,7 @@ class ClaudeMessageHandler:
         had_transcript_events = False
         captured_session_id = None
         temp_session_id = None
-        last_status: str | None = None
+        last_status: Optional[str] = None
 
         parent_session_id = None
         if tree and node.parent_id:
@@ -485,7 +489,7 @@ class ClaudeMessageHandler:
             if parent_session_id:
                 logger.info(f"Will fork from parent session: {parent_session_id}")
 
-        async def update_ui(status: str | None = None, force: bool = False) -> None:
+        async def update_ui(status: Optional[str] = None, force: bool = False) -> None:
             nonlocal last_ui_update, last_displayed_text, last_status
             now = time.time()
             if not force and now - last_ui_update < 1.0:
@@ -666,8 +670,8 @@ class ClaudeMessageHandler:
 
     def _get_initial_status(
         self,
-        tree: object | None,
-        parent_node_id: str | None,
+        tree: Optional[object],
+        parent_node_id: Optional[str],
     ) -> str:
         """Get initial status message text."""
         if tree and parent_node_id:
@@ -726,7 +730,7 @@ class ClaudeMessageHandler:
         self,
         platform: str,
         chat_id: str,
-        msg_id: str | None,
+        msg_id: Optional[str],
         kind: str,
     ) -> None:
         """Record outgoing message ID for /clear. Best-effort, never raises."""

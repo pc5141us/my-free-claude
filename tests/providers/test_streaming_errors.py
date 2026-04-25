@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Tests for streaming error handling in providers/nvidia_nim/client.py."""
 
 import json

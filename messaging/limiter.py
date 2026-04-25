@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """
 Global Rate Limiter for Messaging Platforms.
 
@@ -10,7 +13,7 @@ import os
 import time
 from collections import deque
 from collections.abc import Awaitable, Callable
-from typing import Any
+from typing import Optional, Any
 
 from loguru import logger
 
@@ -75,7 +78,7 @@ class MessagingRateLimiter:
     only the latest version of a message update is processed.
     """
 
-    _instance: MessagingRateLimiter | None = None
+    _instance: Optional[MessagingRateLimiter] = None
     _lock = asyncio.Lock()
 
     def __new__(cls, *args, **kwargs):
@@ -107,7 +110,7 @@ class MessagingRateLimiter:
         ] = {}
         self._condition = asyncio.Condition()
         self._shutdown = asyncio.Event()
-        self._worker_task: asyncio.Task | None = None
+        self._worker_task: Optional[asyncio.Task] = None
 
         self._initialized = True
         self._paused_until = 0
@@ -260,7 +263,7 @@ class MessagingRateLimiter:
                 self._condition.notify_all()
 
     async def enqueue(
-        self, func: Callable[[], Awaitable[Any]], dedup_key: str | None = None
+        self, func: Callable[[], Awaitable[Any]], dedup_key: Optional[str] = None
     ) -> Any:
         """
         Enqueue a messaging task and return its future result.
@@ -275,7 +278,7 @@ class MessagingRateLimiter:
         return await future
 
     def fire_and_forget(
-        self, func: Callable[[], Awaitable[Any]], dedup_key: str | None = None
+        self, func: Callable[[], Awaitable[Any]], dedup_key: Optional[str] = None
     ):
         """Enqueue a task without waiting for the result."""
         if dedup_key is None:

@@ -1,6 +1,8 @@
+from __future__ import annotations
+
+
 """CLI entry points for the installed package."""
 
-from __future__ import annotations
 
 
 def serve() -> None:

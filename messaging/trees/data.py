@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Tree data structures for message queue.
 
 Contains MessageState, MessageNode, and MessageTree classes.
@@ -9,7 +12,7 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from enum import Enum
-from typing import Any
+from typing import Optional, Any
 
 from loguru import logger
 
@@ -78,12 +81,12 @@ class MessageNode:
     incoming: IncomingMessage  # The original message
     status_message_id: str  # Bot's status message ID
     state: MessageState = MessageState.PENDING
-    parent_id: str | None = None  # Parent node ID (None for root)
-    session_id: str | None = None  # Claude session ID (forked from parent)
+    parent_id: Optional[str] = None  # Parent node ID (None for root)
+    session_id: Optional[str] = None  # Claude session ID (forked from parent)
     children_ids: list[str] = field(default_factory=list)
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
-    completed_at: datetime | None = None
-    error_message: str | None = None
+    completed_at: Optional[datetime] = None
+    error_message: Optional[str] = None
     context: Any = None  # Additional context if needed
 
     def set_context(self, context: Any) -> None:
@@ -170,12 +173,12 @@ class MessageTree:
         self._queue: _SnapshotQueue = _SnapshotQueue()
         self._lock = asyncio.Lock()
         self._is_processing = False
-        self._current_node_id: str | None = None
-        self._current_task: asyncio.Task | None = None
+        self._current_node_id: Optional[str] = None
+        self._current_task: Optional[asyncio.Task] = None
 
         logger.debug(f"Created MessageTree with root {self.root_id}")
 
-    def set_current_task(self, task: asyncio.Task | None) -> None:
+    def set_current_task(self, task: Optional[asyncio.Task]) -> None:
         """Set the current processing task. Caller must hold lock."""
         self._current_task = task
 
@@ -222,7 +225,7 @@ class MessageTree:
             logger.debug(f"Added node {node_id} as child of {parent_id}")
             return node
 
-    def get_node(self, node_id: str) -> MessageNode | None:
+    def get_node(self, node_id: str) -> Optional[MessageNode]:
         """Get a node by ID (O(1) lookup)."""
         return self._nodes.get(node_id)
 
@@ -237,14 +240,14 @@ class MessageTree:
             return []
         return [self._nodes[cid] for cid in node.children_ids if cid in self._nodes]
 
-    def get_parent(self, node_id: str) -> MessageNode | None:
+    def get_parent(self, node_id: str) -> Optional[MessageNode]:
         """Get the parent node."""
         node = self._nodes.get(node_id)
         if not node or not node.parent_id:
             return None
         return self._nodes.get(node.parent_id)
 
-    def get_parent_session_id(self, node_id: str) -> str | None:
+    def get_parent_session_id(self, node_id: str) -> Optional[str]:
         """
         Get the parent's session ID for forking.
 
@@ -257,8 +260,8 @@ class MessageTree:
         self,
         node_id: str,
         state: MessageState,
-        session_id: str | None = None,
-        error_message: str | None = None,
+        session_id: Optional[str] = None,
+        error_message: Optional[str] = None,
     ) -> None:
         """Update a node's state."""
         async with self._lock:
@@ -290,7 +293,7 @@ class MessageTree:
             logger.debug(f"Enqueued node {node_id}, position {position}")
             return position
 
-    async def dequeue(self) -> str | None:
+    async def dequeue(self) -> Optional[str]:
         """
         Get the next node ID from the queue.
 
@@ -330,7 +333,7 @@ class MessageTree:
         async with self._lock:
             yield
 
-    def set_processing_state(self, node_id: str | None, is_processing: bool) -> None:
+    def set_processing_state(self, node_id: Optional[str], is_processing: bool) -> None:
         """Set processing state. Caller must hold lock for consistency with queue operations."""
         self._is_processing = is_processing
         self._current_node_id = node_id if is_processing else None
@@ -385,7 +388,7 @@ class MessageTree:
         self._current_node_id = None
 
     @property
-    def current_node_id(self) -> str | None:
+    def current_node_id(self) -> Optional[str]:
         """Get the ID of the node currently being processed."""
         return self._current_node_id
 
@@ -427,7 +430,7 @@ class MessageTree:
         """Check if a node exists in this tree."""
         return node_id in self._nodes
 
-    def find_node_by_status_message(self, status_msg_id: str) -> MessageNode | None:
+    def find_node_by_status_message(self, status_msg_id: str) -> Optional[MessageNode]:
         """Find the node that has this status message ID (O(1) lookup)."""
         node_id = self._status_to_node.get(status_msg_id)
         return self._nodes.get(node_id) if node_id else None

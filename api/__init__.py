@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """API layer for Claude Code Proxy."""
 
 from .app import app, create_app

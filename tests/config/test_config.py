@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Tests for config/settings.py and config/nim.py"""
 
 import pytest

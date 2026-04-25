@@ -1,9 +1,12 @@
+from __future__ import annotations
+
+
 """SSE event builder for Anthropic-format streaming responses."""
 
 import json
 from collections.abc import Iterator
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Optional, Any
 
 from loguru import logger
 
@@ -24,7 +27,7 @@ STOP_REASON_MAP = {
 }
 
 
-def map_stop_reason(openai_reason: str | None) -> str:
+def map_stop_reason(openai_reason: Optional[str]) -> str:
     """Map OpenAI finish_reason to Anthropic stop_reason."""
     return (
         STOP_REASON_MAP.get(openai_reason, "end_turn") if openai_reason else "end_turn"
@@ -79,7 +82,7 @@ class ContentBlockManager:
         elif not prev.startswith(name):
             state.name = prev + name
 
-    def buffer_task_args(self, index: int, args: str) -> dict | None:
+    def buffer_task_args(self, index: int, args: str) -> Optional[dict]:
         """Buffer Task tool args and return parsed JSON when complete.
 
         Returns the parsed (and patched) args dict once the buffer forms

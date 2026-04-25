@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Shared text extraction utilities."""
 
 from typing import Any

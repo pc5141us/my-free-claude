@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """FastAPI application factory and configuration."""
 
 import asyncio

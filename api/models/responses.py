@@ -1,6 +1,9 @@
+from __future__ import annotations
+
+
 """Pydantic models for API responses."""
 
-from typing import Any, Literal
+from typing import Union, Optional, Any, Literal
 
 from pydantic import BaseModel
 
@@ -20,9 +23,9 @@ class ModelResponse(BaseModel):
 
 class ModelsListResponse(BaseModel):
     data: list[ModelResponse]
-    first_id: str | None
+    first_id: Optional[str]
     has_more: bool
-    last_id: str | None
+    last_id: Optional[str]
 
 
 class Usage(BaseModel):
@@ -37,11 +40,11 @@ class MessagesResponse(BaseModel):
     model: str
     role: Literal["assistant"] = "assistant"
     content: list[
-        ContentBlockText | ContentBlockToolUse | ContentBlockThinking | dict[str, Any]
+        Union[ContentBlockText, Union[ContentBlockToolUse], Union[ContentBlockThinking], dict[str, Any], Any]
     ]
     type: Literal["message"] = "message"
-    stop_reason: (
-        Literal["end_turn", "max_tokens", "stop_sequence", "tool_use"] | None
-    ) = None
-    stop_sequence: str | None = None
+    stop_reason: Optional[
+        Literal["end_turn", "max_tokens", "stop_sequence", "tool_use"]
+    ] = None
+    stop_sequence: Optional[str] = None
     usage: Usage

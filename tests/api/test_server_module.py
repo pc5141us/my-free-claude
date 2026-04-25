@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 def test_server_module_exports_app_and_create_app():
     import server
 

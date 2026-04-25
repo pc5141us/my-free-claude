@@ -1,8 +1,11 @@
+from __future__ import annotations
+
+
 """LM Studio provider implementation."""
 
 import json
 from collections.abc import AsyncIterator
-from typing import Any
+from typing import Optional, Any
 
 import httpx
 from loguru import logger
@@ -52,7 +55,7 @@ class LMStudioProvider(BaseProvider):
         request: Any,
         input_tokens: int = 0,
         *,
-        request_id: str | None = None,
+        request_id: Optional[str] = None,
     ) -> AsyncIterator[str]:
         """Stream response natively via LM Studio's Anthropic-compatible endpoint."""
         tag = self._provider_name

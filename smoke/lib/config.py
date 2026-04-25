@@ -1,6 +1,9 @@
+from __future__ import annotations
+
+from typing import Union, Optional
+
 """Smoke-suite configuration loaded from the real developer environment."""
 
-from __future__ import annotations
 
 import os
 from collections.abc import Mapping
@@ -22,7 +25,7 @@ DEFAULT_TARGETS = frozenset(
         "vscode",
     }
 )
-ALL_TARGETS = DEFAULT_TARGETS | frozenset({"discord", "telegram", "voice"})
+ALL_TARGETS = Union[DEFAULT_TARGETS, frozenset]({"discord", "telegram", "voice"})
 SECRET_KEY_PARTS = ("KEY", "TOKEN", "SECRET", "WEBHOOK", "AUTH")
 
 
@@ -110,13 +113,13 @@ class SmokeConfig:
         return False
 
 
-def _parse_csv(raw: str | None) -> frozenset[str]:
+def _parse_csv(raw: Optional[str]) -> frozenset[str]:
     if not raw:
         return frozenset()
     return frozenset(part.strip() for part in raw.split(",") if part.strip())
 
 
-def _parse_targets(raw: str | None) -> frozenset[str]:
+def _parse_targets(raw: Optional[str]) -> frozenset[str]:
     if not raw:
         return DEFAULT_TARGETS
     parsed = _parse_csv(raw)
@@ -125,7 +128,7 @@ def _parse_targets(raw: str | None) -> frozenset[str]:
     return parsed
 
 
-def auth_headers(token: str | None = None) -> dict[str, str]:
+def auth_headers(token: Optional[str] = None) -> dict[str, str]:
     settings = get_settings()
     resolved = token if token is not None else settings.anthropic_auth_token
     headers = {
@@ -137,7 +140,7 @@ def auth_headers(token: str | None = None) -> dict[str, str]:
     return headers
 
 
-def redacted(value: str, env: Mapping[str, str] | None = None) -> str:
+def redacted(value: str, env: Mapping[str, Optional[str]] = None) -> str:
     """Redact known secrets from a string before writing smoke artifacts."""
     if not value:
         return value

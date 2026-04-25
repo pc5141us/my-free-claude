@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 """Optimization handlers for fast-path API responses.
 
 Each handler returns a MessagesResponse if the request matches and the
@@ -24,7 +28,7 @@ from .models.responses import MessagesResponse, Usage
 
 def try_prefix_detection(
     request_data: MessagesRequest, settings: Settings
-) -> MessagesResponse | None:
+) -> Optional[MessagesResponse]:
     """Fast prefix detection - return command prefix without API call."""
     if not settings.fast_prefix_detection:
         return None
@@ -45,7 +49,7 @@ def try_prefix_detection(
 
 def try_quota_mock(
     request_data: MessagesRequest, settings: Settings
-) -> MessagesResponse | None:
+) -> Optional[MessagesResponse]:
     """Mock quota probe requests."""
     if not settings.enable_network_probe_mock:
         return None
@@ -65,7 +69,7 @@ def try_quota_mock(
 
 def try_title_skip(
     request_data: MessagesRequest, settings: Settings
-) -> MessagesResponse | None:
+) -> Optional[MessagesResponse]:
     """Skip title generation requests."""
     if not settings.enable_title_generation_skip:
         return None
@@ -85,7 +89,7 @@ def try_title_skip(
 
 def try_suggestion_skip(
     request_data: MessagesRequest, settings: Settings
-) -> MessagesResponse | None:
+) -> Optional[MessagesResponse]:
     """Skip suggestion mode requests."""
     if not settings.enable_suggestion_mode_skip:
         return None
@@ -105,7 +109,7 @@ def try_suggestion_skip(
 
 def try_filepath_mock(
     request_data: MessagesRequest, settings: Settings
-) -> MessagesResponse | None:
+) -> Optional[MessagesResponse]:
     """Mock filepath extraction requests."""
     if not settings.enable_filepath_extraction_mock:
         return None
@@ -138,7 +142,7 @@ OPTIMIZATION_HANDLERS = [
 
 def try_optimizations(
     request_data: MessagesRequest, settings: Settings
-) -> MessagesResponse | None:
+) -> Optional[MessagesResponse]:
     """Run optimization handlers in order. Returns first match or None."""
     for handler in OPTIMIZATION_HANDLERS:
         result = handler(request_data, settings)

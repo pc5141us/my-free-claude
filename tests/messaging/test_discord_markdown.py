@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Union
+
 """Tests for messaging/rendering/discord_markdown.py."""
 
 from messaging.rendering.discord_markdown import (
@@ -103,8 +107,8 @@ class TestIsGfmTableHeaderLine:
         assert _is_gfm_table_header_line("|:---|:---|") is False
 
     def test_valid_header(self):
-        assert _is_gfm_table_header_line("| A | B |") is True
-        assert _is_gfm_table_header_line("A | B") is True
+        assert _is_gfm_table_header_line("| Union[A, B] |") is True
+        assert _is_gfm_table_header_line("Union[A, B]") is True
 
     def test_single_column_returns_false(self):
         assert _is_gfm_table_header_line("| A |") is False
@@ -120,13 +124,13 @@ class TestNormalizeGfmTables:
         assert _normalize_gfm_tables("a\nb") == "a\nb"
 
     def test_table_gets_blank_line_before(self):
-        text = "para\n| A | B |\n|---|\n| 1 | 2 |"
+        text = "para\Union[n, Union[A], B] |\n|---|\Union[n, Union[1], 2] |"
         result = _normalize_gfm_tables(text)
         assert "para" in result
-        assert "| A | B |" in result
+        assert "| Union[A, B] |" in result
 
     def test_table_inside_fence_unchanged(self):
-        text = "```\n| A | B |\n|---|\n```"
+        text = "```\Union[n, Union[A], B] |\n|---|\n```"
         result = _normalize_gfm_tables(text)
         assert result == text
 
@@ -193,7 +197,7 @@ class TestRenderMarkdownToDiscord:
         assert "https://img.png" in result
 
     def test_gfm_table(self):
-        text = "| A | B |\n|---|---|\n| 1 | 2 |"
+        text = "| Union[A, B] |\n|---|---|\Union[n, Union[1], 2] |"
         result = render_markdown_to_discord(text)
         assert "A" in result
         assert "B" in result

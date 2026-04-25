@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 """Discord markdown utilities.
 
 Discord uses standard markdown: **bold**, *italic*, `code`, ```code block```.
@@ -83,7 +87,7 @@ def discord_code_inline(text: str) -> str:
     return f"`{escape_discord_code(text)}`"
 
 
-def format_status_discord(label: str, suffix: str | None = None) -> str:
+def format_status_discord(label: str, suffix: Optional[str] = None) -> str:
     """Format a status message for Discord (label in bold, optional suffix)."""
     base = discord_bold(label)
     if suffix:
@@ -91,7 +95,7 @@ def format_status_discord(label: str, suffix: str | None = None) -> str:
     return base
 
 
-def format_status(emoji: str, label: str, suffix: str | None = None) -> str:
+def format_status(emoji: str, label: str, suffix: Optional[str] = None) -> str:
     """Format a status message with emoji for Discord (matches Telegram API)."""
     base = f"{emoji} {discord_bold(label)}"
     if suffix:
@@ -178,7 +182,7 @@ def render_markdown_to_discord(text: str) -> str:
 
     out: list[str] = []
     list_stack: list[dict] = []
-    pending_prefix: str | None = None
+    pending_prefix: Optional[str] = None
     blockquote_level = 0
     in_heading = False
 

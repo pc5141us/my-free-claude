@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Tests for DeepSeek provider."""
 
 from unittest.mock import AsyncMock, MagicMock, patch

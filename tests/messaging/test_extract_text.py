@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Tests for extract_text_from_content helper functions."""
 
 from unittest.mock import MagicMock

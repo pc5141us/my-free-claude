@@ -1,5 +1,9 @@
+from __future__ import annotations
+
+
 """NVIDIA NIM settings (fixed values, no env config)."""
 
+from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
@@ -16,15 +20,15 @@ class NimSettings(BaseModel):
     min_p: float = Field(0.0, ge=0.0, le=1.0)
     repetition_penalty: float = Field(1.0, ge=0.0)
 
-    seed: int | None = None
-    stop: str | None = None
+    seed: Optional[int] = None
+    stop: Optional[str] = None
 
     parallel_tool_calls: bool = True
     ignore_eos: bool = False
 
     min_tokens: int = Field(0, ge=0)
-    chat_template: str | None = None
-    request_id: str | None = None
+    chat_template: Optional[str] = None
+    request_id: Optional[str] = None
 
     model_config = ConfigDict(extra="forbid")
 

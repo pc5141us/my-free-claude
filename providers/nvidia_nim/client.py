@@ -1,7 +1,10 @@
+from __future__ import annotations
+
+
 """NVIDIA NIM provider implementation."""
 
 import json
-from typing import Any
+from typing import Optional, Any
 
 import openai
 from loguru import logger
@@ -39,7 +42,7 @@ class NvidiaNimProvider(OpenAICompatibleProvider):
             thinking_enabled=self._is_thinking_enabled(request),
         )
 
-    def _get_retry_request_body(self, error: Exception, body: dict) -> dict | None:
+    def _get_retry_request_body(self, error: Exception, body: dict) -> Optional[dict]:
         """Retry once with a downgraded body when NIM rejects a known field."""
         status_code = getattr(error, "status_code", None)
         if not isinstance(error, openai.BadRequestError) and status_code != 400:

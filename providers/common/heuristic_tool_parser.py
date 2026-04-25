@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 import re
 import uuid
 from enum import Enum

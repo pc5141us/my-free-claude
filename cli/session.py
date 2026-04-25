@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Claude Code CLI session management."""
 
 import asyncio
@@ -18,15 +21,15 @@ class CLISession:
         self,
         workspace_path: str,
         api_url: str,
-        allowed_dirs: list[str] | None = None,
-        plans_directory: str | None = None,
+        allowed_dirs: Optional[list[str]] = None,
+        plans_directory: Optional[str] = None,
     ):
         self.workspace = os.path.normpath(os.path.abspath(workspace_path))
         self.api_url = api_url
         self.allowed_dirs = [os.path.normpath(d) for d in (allowed_dirs or [])]
         self.plans_directory = plans_directory
-        self.process: asyncio.subprocess.Process | None = None
-        self.current_session_id: str | None = None
+        self.process: Optional[asyncio.subprocess.Process] = None
+        self.current_session_id: Optional[str] = None
         self._is_busy = False
         self._cli_lock = asyncio.Lock()
 
@@ -36,7 +39,7 @@ class CLISession:
         return self._is_busy
 
     async def start_task(
-        self, prompt: str, session_id: str | None = None, fork_session: bool = False
+        self, prompt: str, session_id: Optional[str] = None, fork_session: bool = False
     ) -> AsyncGenerator[dict]:
         """
         Start a new task or continue an existing session.
@@ -212,7 +215,7 @@ class CLISession:
             logger.debug(f"Non-JSON output: {line_str}")
             yield {"type": "raw", "content": line_str}
 
-    def _extract_session_id(self, event: Any) -> str | None:
+    def _extract_session_id(self, event: Any) -> Optional[str]:
         """Extract session ID from CLI event."""
         if not isinstance(event, dict):
             return None

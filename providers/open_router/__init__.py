@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """OpenRouter provider - OpenAI-compatible API for hundreds of models."""
 
 from .client import OPENROUTER_BASE_URL, OpenRouterProvider

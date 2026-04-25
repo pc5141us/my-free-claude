@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Tests for providers/nvidia_nim/request.py."""
 
 from unittest.mock import MagicMock

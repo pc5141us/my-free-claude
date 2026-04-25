@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Edge case tests for api/detection.py."""
 
 from unittest.mock import patch

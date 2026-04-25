@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Global rate limiter for API requests."""
 
 import asyncio
@@ -28,7 +31,7 @@ class GlobalRateLimiter:
     Concurrency limit - caps simultaneously open streams.
     """
 
-    _instance: ClassVar[GlobalRateLimiter | None] = None
+    _instance: Optional[ClassVar[GlobalRateLimiter]] = None
 
     def __new__(cls, *args: Any, **kwargs: Any) -> GlobalRateLimiter:
         if cls._instance is not None:
@@ -69,8 +72,8 @@ class GlobalRateLimiter:
     @classmethod
     def get_instance(
         cls,
-        rate_limit: int | None = None,
-        rate_window: float | None = None,
+        rate_limit: Optional[int] = None,
+        rate_window: Optional[float] = None,
         max_concurrency: int = 5,
     ) -> GlobalRateLimiter:
         """Get or create the singleton instance.
@@ -202,7 +205,7 @@ class GlobalRateLimiter:
         Raises:
             The last exception if all retries are exhausted.
         """
-        last_exc: Exception | None = None
+        last_exc: Optional[Exception] = None
 
         for attempt in range(1 + max_retries):
             await self.wait_if_blocked()

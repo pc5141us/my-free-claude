@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Messaging platform adapters (Telegram, Discord, etc.)."""
 
 from .base import CLISession, MessagingPlatform, SessionManagerInterface

@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """
 Claude Code Proxy - Entry Point
 

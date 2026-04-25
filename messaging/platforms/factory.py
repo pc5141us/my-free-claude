@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 """Messaging platform factory.
 
 Creates the appropriate messaging platform adapter based on configuration.
@@ -14,7 +18,7 @@ from .base import MessagingPlatform
 def create_messaging_platform(
     platform_type: str,
     **kwargs,
-) -> MessagingPlatform | None:
+) -> Optional[MessagingPlatform]:
     """Create a messaging platform instance based on type.
 
     Args:

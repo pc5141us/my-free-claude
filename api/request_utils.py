@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Union, Optional
+
 """Request utility functions for API route handlers.
 
 Contains token counting for API requests.
@@ -17,8 +21,8 @@ __all__ = ["get_token_count"]
 
 def get_token_count(
     messages: list,
-    system: str | list | None = None,
-    tools: list | None = None,
+    system: Union[str, Optional[list]] = None,
+    tools: Optional[list] = None,
 ) -> int:
     """Estimate token count for a request.
 
@@ -84,7 +88,7 @@ def get_token_count(
                     )
                     try:
                         total_tokens += len(ENCODER.encode(json.dumps(block)))
-                    except TypeError, ValueError:
+                    except (TypeError, ValueError):
                         total_tokens += len(ENCODER.encode(str(block)))
 
     if tools:

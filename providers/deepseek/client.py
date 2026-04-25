@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """DeepSeek provider implementation."""
 
 from typing import Any

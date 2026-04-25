@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 """Tests for api/optimization_handlers.py."""
 
 from unittest.mock import patch
@@ -15,7 +19,7 @@ from config.settings import Settings
 
 
 def _make_request(
-    messages_content: str, max_tokens: int | None = None
+    messages_content: str, max_tokens: Optional[int] = None
 ) -> MessagesRequest:
     """Create a MessagesRequest with a single user message."""
     return MessagesRequest(

@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Loguru-based structured logging configuration.
 
 All logs are written to server.log as JSON lines for full traceability.

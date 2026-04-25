@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Ordered transcript builder for messaging UIs (Telegram, etc.).
 
 This module maintains an ordered list of "segments" that represent what the user
@@ -6,7 +9,6 @@ headers, and assistant text. It is designed for in-place message editing where
 the transcript grows over time and older content must be truncated.
 """
 
-from __future__ import annotations
 
 import json
 import os
@@ -14,7 +16,7 @@ from abc import ABC, abstractmethod
 from collections import deque
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Optional, Any
 
 from loguru import logger
 
@@ -100,7 +102,7 @@ class ToolCallSegment(Segment):
 @dataclass
 class ToolResultSegment(Segment):
     tool_use_id: str
-    name: str | None
+    name: Optional[str]
     content_text: str
     is_error: bool = False
 
@@ -109,7 +111,7 @@ class ToolResultSegment(Segment):
         tool_use_id: str,
         content: Any,
         *,
-        name: str | None = None,
+        name: Optional[str] = None,
         is_error: bool = False,
     ) -> None:
         super().__init__(kind="tool_result")
@@ -136,7 +138,7 @@ class SubagentSegment(Segment):
     description: str
     tool_calls: int = 0
     tools_used: set[str] = field(default_factory=set)
-    current_tool: ToolCallSegment | None = None
+    current_tool: Optional[ToolCallSegment] = None
 
     def __init__(self, description: str) -> None:
         super().__init__(kind="subagent")
@@ -201,10 +203,10 @@ class RenderCtx:
     escape_text: Callable[[str], str]
     render_markdown: Callable[[str], str]
 
-    thinking_tail_max: int | None = 1000
-    tool_input_tail_max: int | None = 1200
-    tool_output_tail_max: int | None = 1600
-    text_tail_max: int | None = 2000
+    thinking_tail_max: Optional[int] = 1000
+    tool_input_tail_max: Optional[int] = 1200
+    tool_output_tail_max: Optional[int] = 1600
+    text_tail_max: Optional[int] = 2000
 
 
 class TranscriptBuffer:
@@ -232,7 +234,7 @@ class TranscriptBuffer:
     def _in_subagent(self) -> bool:
         return bool(self._subagent_stack)
 
-    def _subagent_current(self) -> SubagentSegment | None:
+    def _subagent_current(self) -> Optional[SubagentSegment]:
         return self._subagent_segments[-1] if self._subagent_segments else None
 
     def _task_heading_from_input(self, inp: Any) -> str:
@@ -519,7 +521,7 @@ class TranscriptBuffer:
             self._segments.append(ErrorSegment(str(ev.get("message", ""))))
             return
 
-    def render(self, ctx: RenderCtx, *, limit_chars: int, status: str | None) -> str:
+    def render(self, ctx: RenderCtx, *, limit_chars: int, status: Optional[str]) -> str:
         """Render transcript with truncation (drop oldest segments)."""
         # Filter out empty rendered segments.
         rendered: list[str] = []
@@ -549,7 +551,7 @@ class TranscriptBuffer:
         # Use deque for O(1) popleft; list.pop(0) would be O(n) per iteration.
         parts: deque[str] = deque(rendered)
         dropped = False
-        last_part: str | None = None
+        last_part: Optional[str] = None
         while parts:
             candidate = _join(parts, add_marker=True)
             if len(candidate) <= limit_chars:

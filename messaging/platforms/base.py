@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Abstract base class for messaging platforms."""
 
 from abc import ABC, abstractmethod
@@ -16,7 +19,7 @@ class CLISession(Protocol):
     """Protocol for CLI session - avoid circular import from cli package."""
 
     def start_task(
-        self, prompt: str, session_id: str | None = None, fork_session: bool = False
+        self, prompt: str, session_id: Optional[str] = None, fork_session: bool = False
     ) -> AsyncGenerator[dict, Any]:
         """Start a task in the CLI session."""
         ...
@@ -37,7 +40,7 @@ class SessionManagerInterface(Protocol):
     """
 
     async def get_or_create_session(
-        self, session_id: str | None = None
+        self, session_id: Optional[str] = None
     ) -> tuple[CLISession, str, bool]:
         """
         Get an existing session or create a new one.
@@ -89,9 +92,9 @@ class MessagingPlatform(ABC):
         self,
         chat_id: str,
         text: str,
-        reply_to: str | None = None,
-        parse_mode: str | None = None,
-        message_thread_id: str | None = None,
+        reply_to: Optional[str] = None,
+        parse_mode: Optional[str] = None,
+        message_thread_id: Optional[str] = None,
     ) -> str:
         """
         Send a message to a chat.
@@ -114,7 +117,7 @@ class MessagingPlatform(ABC):
         chat_id: str,
         message_id: str,
         text: str,
-        parse_mode: str | None = None,
+        parse_mode: Optional[str] = None,
     ) -> None:
         """
         Edit an existing message.
@@ -147,11 +150,11 @@ class MessagingPlatform(ABC):
         self,
         chat_id: str,
         text: str,
-        reply_to: str | None = None,
-        parse_mode: str | None = None,
+        reply_to: Optional[str] = None,
+        parse_mode: Optional[str] = None,
         fire_and_forget: bool = True,
-        message_thread_id: str | None = None,
-    ) -> str | None:
+        message_thread_id: Optional[str] = None,
+    ) -> Optional[str]:
         """
         Enqueue a message to be sent.
 
@@ -166,7 +169,7 @@ class MessagingPlatform(ABC):
         chat_id: str,
         message_id: str,
         text: str,
-        parse_mode: str | None = None,
+        parse_mode: Optional[str] = None,
         fire_and_forget: bool = True,
     ) -> None:
         """

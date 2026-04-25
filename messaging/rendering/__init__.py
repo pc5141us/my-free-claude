@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Markdown rendering utilities for messaging platforms."""
 
 from .discord_markdown import (

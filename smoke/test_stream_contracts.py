@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from typing import Optional
+
+
 from collections.abc import Iterable
 
 import pytest
@@ -153,7 +156,7 @@ def _interleaved_thinking_text_events(
 
 def _events_from_text_chunks(
     chunks: list[str],
-    builder: SSEBuilder | None = None,
+    builder: Optional[SSEBuilder] = None,
     *,
     enable_thinking: bool = True,
 ) -> list[str]:

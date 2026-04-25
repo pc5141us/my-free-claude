@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 """Tree-Based Message Queue Manager - Refactored.
 
 Coordinates data access, async processing, and error handling.
@@ -37,10 +41,10 @@ class TreeQueueManager:
 
     def __init__(
         self,
-        queue_update_callback: Callable[[MessageTree], Awaitable[None]] | None = None,
+        queue_update_callback: Callable[[MessageTree], Optional[Awaitable[None]]] = None,
         node_started_callback: Callable[[MessageTree, str], Awaitable[None]]
         | None = None,
-        _repository: TreeRepository | None = None,
+        _repository: Optional[TreeRepository] = None,
     ):
         self._repository = _repository or TreeRepository()
         self._processor = TreeQueueProcessor(
@@ -123,19 +127,19 @@ class TreeQueueManager:
         logger.info(f"Added node {node_id} to tree {tree.root_id}")
         return tree, node
 
-    def get_tree(self, root_id: str) -> MessageTree | None:
+    def get_tree(self, root_id: str) -> Optional[MessageTree]:
         """Get a tree by its root ID."""
         return self._repository.get_tree(root_id)
 
-    def get_tree_for_node(self, node_id: str) -> MessageTree | None:
+    def get_tree_for_node(self, node_id: str) -> Optional[MessageTree]:
         """Get the tree containing a given node."""
         return self._repository.get_tree_for_node(node_id)
 
-    def get_node(self, node_id: str) -> MessageNode | None:
+    def get_node(self, node_id: str) -> Optional[MessageNode]:
         """Get a node from any tree."""
         return self._repository.get_node(node_id)
 
-    def resolve_parent_node_id(self, msg_id: str) -> str | None:
+    def resolve_parent_node_id(self, msg_id: str) -> Optional[str]:
         """Resolve a message ID to the actual parent node ID."""
         return self._repository.resolve_parent_node_id(msg_id)
 
@@ -340,14 +344,14 @@ class TreeQueueManager:
 
     def set_queue_update_callback(
         self,
-        queue_update_callback: Callable[[MessageTree], Awaitable[None]] | None,
+        queue_update_callback: Callable[[MessageTree], Optional[Awaitable[None]]],
     ) -> None:
         """Set callback for queue position updates."""
         self._processor.set_queue_update_callback(queue_update_callback)
 
     def set_node_started_callback(
         self,
-        node_started_callback: Callable[[MessageTree, str], Awaitable[None]] | None,
+        node_started_callback: Callable[[MessageTree, str], Optional[Awaitable[None]]],
     ) -> None:
         """Set callback for when a queued node starts processing."""
         self._processor.set_node_started_callback(node_started_callback)
@@ -433,7 +437,7 @@ class TreeQueueManager:
     def from_dict(
         cls,
         data: dict,
-        queue_update_callback: Callable[[MessageTree], Awaitable[None]] | None = None,
+        queue_update_callback: Callable[[MessageTree], Optional[Awaitable[None]]] = None,
         node_started_callback: Callable[[MessageTree, str], Awaitable[None]]
         | None = None,
     ) -> TreeQueueManager:

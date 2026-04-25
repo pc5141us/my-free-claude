@@ -1,7 +1,10 @@
+from __future__ import annotations
+
+
 """Request builder for NVIDIA NIM provider."""
 
 from copy import deepcopy
-from typing import Any
+from typing import Optional, Any
 
 from loguru import logger
 
@@ -22,7 +25,7 @@ def _set_extra(
     extra_body[key] = value
 
 
-def clone_body_without_reasoning_budget(body: dict[str, Any]) -> dict[str, Any] | None:
+def clone_body_without_reasoning_budget(body: dict[str, Any]) -> dict[str, Optional[Any]]:
     """Clone a request body and strip only reasoning_budget fields."""
     cloned_body = deepcopy(body)
     extra_body = cloned_body.get("extra_body")
@@ -47,7 +50,7 @@ def clone_body_without_reasoning_budget(body: dict[str, Any]) -> dict[str, Any] 
     return cloned_body
 
 
-def clone_body_without_chat_template(body: dict[str, Any]) -> dict[str, Any] | None:
+def clone_body_without_chat_template(body: dict[str, Any]) -> dict[str, Optional[Any]]:
     """Clone a request body and strip only chat_template."""
     cloned_body = deepcopy(body)
     extra_body = cloned_body.get("extra_body")

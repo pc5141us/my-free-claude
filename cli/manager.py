@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 """
 CLI Session Manager for Multi-Instance Claude CLI Support
 
@@ -26,8 +30,8 @@ class CLISessionManager:
         self,
         workspace_path: str,
         api_url: str,
-        allowed_dirs: list[str] | None = None,
-        plans_directory: str | None = None,
+        allowed_dirs: Optional[list[str]] = None,
+        plans_directory: Optional[str] = None,
     ):
         """
         Initialize the session manager.
@@ -52,7 +56,7 @@ class CLISessionManager:
         logger.info("CLISessionManager initialized")
 
     async def get_or_create_session(
-        self, session_id: str | None = None
+        self, session_id: Optional[str] = None
     ) -> tuple[CLISession, str, bool]:
         """
         Get an existing session or create a new one.

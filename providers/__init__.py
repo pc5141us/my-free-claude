@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Providers package - implement your own provider by extending BaseProvider."""
 
 from .base import BaseProvider, ProviderConfig

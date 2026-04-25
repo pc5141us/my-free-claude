@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 """Async queue processor for message trees.
 
 Handles the async processing lifecycle of tree nodes.
@@ -22,7 +26,7 @@ class TreeQueueProcessor:
 
     def __init__(
         self,
-        queue_update_callback: Callable[[MessageTree], Awaitable[None]] | None = None,
+        queue_update_callback: Callable[[MessageTree], Optional[Awaitable[None]]] = None,
         node_started_callback: Callable[[MessageTree, str], Awaitable[None]]
         | None = None,
     ):
@@ -31,14 +35,14 @@ class TreeQueueProcessor:
 
     def set_queue_update_callback(
         self,
-        queue_update_callback: Callable[[MessageTree], Awaitable[None]] | None,
+        queue_update_callback: Callable[[MessageTree], Optional[Awaitable[None]]],
     ) -> None:
         """Update the callback used to refresh queue positions."""
         self._queue_update_callback = queue_update_callback
 
     def set_node_started_callback(
         self,
-        node_started_callback: Callable[[MessageTree, str], Awaitable[None]] | None,
+        node_started_callback: Callable[[MessageTree, str], Optional[Awaitable[None]]],
     ) -> None:
         """Update the callback used when a queued node starts processing."""
         self._node_started_callback = node_started_callback

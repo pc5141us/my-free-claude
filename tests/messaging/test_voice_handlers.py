@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Tests for voice note handling in Telegram and Discord platforms."""
 
 import tempfile

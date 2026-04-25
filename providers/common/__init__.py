@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Shared provider utilities used by NIM, OpenRouter, and LM Studio."""
 
 from .error_mapping import append_request_id, get_user_facing_error_message, map_error

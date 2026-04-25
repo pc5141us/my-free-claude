@@ -1,10 +1,13 @@
+from __future__ import annotations
+
+
 """Centralized configuration using Pydantic Settings."""
 
 import os
 from collections.abc import Mapping
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional, Union
 
 from dotenv import dotenv_values
 from pydantic import Field, field_validator, model_validator
@@ -39,7 +42,7 @@ def _env_file_contains_key(path: Path, key: str) -> bool:
     return _env_file_value(path, key) is not None
 
 
-def _env_file_value(path: Path, key: str) -> str | None:
+def _env_file_value(path: Path, key: str) -> Optional[str]:
     """Return a dotenv value when the file explicitly defines the key."""
     if not path.is_file():
         return None
@@ -55,9 +58,9 @@ def _env_file_value(path: Path, key: str) -> str | None:
     return "" if value is None else value
 
 
-def _env_file_override(model_config: Mapping[str, Any], key: str) -> str | None:
+def _env_file_override(model_config: Mapping[str, Any], key: str) -> Optional[str]:
     """Return the last configured dotenv value that explicitly defines a key."""
-    configured_value: str | None = None
+    configured_value: Optional[str] = None
     for env_file in _configured_env_files(model_config):
         value = _env_file_value(env_file, key)
         if value is not None:
@@ -65,7 +68,7 @@ def _env_file_override(model_config: Mapping[str, Any], key: str) -> str | None:
     return configured_value
 
 
-def _removed_env_var_message(model_config: Mapping[str, Any]) -> str | None:
+def _removed_env_var_message(model_config: Mapping[str, Any]) -> Optional[str]:
     """Return a migration error for removed env vars, if present."""
     removed_key = "NIM_ENABLE_THINKING"
     replacement = "ENABLE_THINKING"
@@ -123,9 +126,9 @@ class Settings(BaseSettings):
 
     # Per-model overrides (optional, falls back to MODEL)
     # Each can use a different provider
-    model_opus: str | None = Field(default=None, validation_alias="MODEL_OPUS")
-    model_sonnet: str | None = Field(default=None, validation_alias="MODEL_SONNET")
-    model_haiku: str | None = Field(default=None, validation_alias="MODEL_HAIKU")
+    model_opus: Optional[str] = Field(default=None, validation_alias="MODEL_OPUS")
+    model_sonnet: Optional[str] = Field(default=None, validation_alias="MODEL_SONNET")
+    model_haiku: Optional[str] = Field(default=None, validation_alias="MODEL_HAIKU")
 
     # ==================== Per-Provider Proxy ====================
     nvidia_nim_proxy: str = Field(default="", validation_alias="NVIDIA_NIM_PROXY")
@@ -182,12 +185,12 @@ class Settings(BaseSettings):
     hf_token: str = Field(default="", validation_alias="HF_TOKEN")
 
     # ==================== Bot Wrapper Config ====================
-    telegram_bot_token: str | None = None
-    allowed_telegram_user_id: str | None = None
-    discord_bot_token: str | None = Field(
+    telegram_bot_token: Optional[str] = None
+    allowed_telegram_user_id: Optional[str] = None
+    discord_bot_token: Optional[str] = Field(
         default=None, validation_alias="DISCORD_BOT_TOKEN"
     )
-    allowed_discord_channels: str | None = Field(
+    allowed_discord_channels: Optional[str] = Field(
         default=None, validation_alias="ALLOWED_DISCORD_CHANNELS"
     )
     claude_workspace: str = "./agent_workspace"
@@ -239,7 +242,7 @@ class Settings(BaseSettings):
 
     @field_validator("model", "model_opus", "model_sonnet", "model_haiku")
     @classmethod
-    def validate_model_format(cls, v: str | None) -> str | None:
+    def validate_model_format(cls, v: Optional[str]) -> Optional[str]:
         if v is None:
             return None
         valid_providers = (

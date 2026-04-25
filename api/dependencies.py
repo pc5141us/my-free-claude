@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Dependency injection for FastAPI."""
 
 from fastapi import Depends, HTTPException, Request

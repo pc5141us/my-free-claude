@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """
 Telegram Platform Adapter
 
@@ -59,8 +62,8 @@ class TelegramPlatform(MessagingPlatform):
 
     def __init__(
         self,
-        bot_token: str | None = None,
-        allowed_user_id: str | None = None,
+        bot_token: Optional[str] = None,
+        allowed_user_id: Optional[str] = None,
     ):
         if not TELEGRAM_AVAILABLE:
             raise ImportError(
@@ -75,12 +78,12 @@ class TelegramPlatform(MessagingPlatform):
             # but start() will fail.
             logger.warning("TELEGRAM_BOT_TOKEN not set")
 
-        self._application: Application | None = None
-        self._message_handler: Callable[[IncomingMessage], Awaitable[None]] | None = (
+        self._application: Optional[Application] = None
+        self._message_handler: Callable[[IncomingMessage], Optional[Awaitable[None]]] = (
             None
         )
         self._connected = False
-        self._limiter: Any | None = None  # Will be MessagingRateLimiter
+        self._limiter: Optional[Any] = None  # Will be MessagingRateLimiter
         # Pending voice transcriptions: (chat_id, msg_id) -> (voice_msg_id, status_msg_id)
         self._pending_voice: dict[tuple[str, str], tuple[str, str]] = {}
         self._pending_voice_lock = asyncio.Lock()
@@ -98,7 +101,7 @@ class TelegramPlatform(MessagingPlatform):
 
     async def cancel_pending_voice(
         self, chat_id: str, reply_id: str
-    ) -> tuple[str, str] | None:
+    ) -> tuple[str, Optional[str]]:
         """Cancel a pending voice transcription. Returns (voice_msg_id, status_msg_id) if found."""
         async with self._pending_voice_lock:
             entry = self._pending_voice.pop((chat_id, reply_id), None)
@@ -264,9 +267,9 @@ class TelegramPlatform(MessagingPlatform):
         self,
         chat_id: str,
         text: str,
-        reply_to: str | None = None,
-        parse_mode: str | None = "MarkdownV2",
-        message_thread_id: str | None = None,
+        reply_to: Optional[str] = None,
+        parse_mode: Optional[str] = "MarkdownV2",
+        message_thread_id: Optional[str] = None,
     ) -> str:
         """Send a message to a chat."""
         app = self._application
@@ -293,7 +296,7 @@ class TelegramPlatform(MessagingPlatform):
         chat_id: str,
         message_id: str,
         text: str,
-        parse_mode: str | None = "MarkdownV2",
+        parse_mode: Optional[str] = "MarkdownV2",
     ) -> None:
         """Edit an existing message."""
         app = self._application
@@ -361,11 +364,11 @@ class TelegramPlatform(MessagingPlatform):
         self,
         chat_id: str,
         text: str,
-        reply_to: str | None = None,
-        parse_mode: str | None = "MarkdownV2",
+        reply_to: Optional[str] = None,
+        parse_mode: Optional[str] = "MarkdownV2",
         fire_and_forget: bool = True,
-        message_thread_id: str | None = None,
-    ) -> str | None:
+        message_thread_id: Optional[str] = None,
+    ) -> Optional[str]:
         """Enqueue a message to be sent (using limiter)."""
         # Note: Bot API handles limits better, but we still use our limiter for nice queuing
         if not self._limiter:
@@ -389,7 +392,7 @@ class TelegramPlatform(MessagingPlatform):
         chat_id: str,
         message_id: str,
         text: str,
-        parse_mode: str | None = "MarkdownV2",
+        parse_mode: Optional[str] = "MarkdownV2",
         fire_and_forget: bool = True,
     ) -> None:
         """Enqueue a message edit."""

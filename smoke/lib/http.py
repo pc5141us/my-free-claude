@@ -1,8 +1,10 @@
-"""HTTP helpers for live smoke requests."""
-
 from __future__ import annotations
 
-from typing import Any
+
+"""HTTP helpers for live smoke requests."""
+
+
+from typing import Optional, Any
 
 import httpx
 
@@ -16,7 +18,7 @@ def message_payload(
     *,
     model: str = "claude-3-5-sonnet-20241022",
     max_tokens: int = 128,
-    extra: dict[str, Any] | None = None,
+    extra: dict[str, Optional[Any]] = None,
 ) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "model": model,
@@ -34,7 +36,7 @@ def post_json(
     payload: dict[str, Any],
     config: SmokeConfig,
     *,
-    headers: dict[str, str] | None = None,
+    headers: dict[str, Optional[str]] = None,
 ) -> httpx.Response:
     request_headers = headers or auth_headers()
     response = httpx.post(
@@ -51,7 +53,7 @@ def collect_message_stream(
     payload: dict[str, Any],
     config: SmokeConfig,
     *,
-    headers: dict[str, str] | None = None,
+    headers: dict[str, Optional[str]] = None,
 ) -> list[SSEEvent]:
     request_headers = headers or auth_headers()
     with httpx.stream(

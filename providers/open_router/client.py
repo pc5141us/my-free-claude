@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """OpenRouter provider implementation."""
 
 from collections.abc import Iterator

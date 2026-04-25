@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Tests for config/logging_config.py."""
 
 import json

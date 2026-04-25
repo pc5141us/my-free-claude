@@ -1,6 +1,8 @@
+from __future__ import annotations
+
+
 """Small JSON report writer for smoke runs."""
 
-from __future__ import annotations
 
 import json
 import time

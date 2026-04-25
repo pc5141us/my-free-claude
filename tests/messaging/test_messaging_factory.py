@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Tests for messaging platform factory."""
 
 from unittest.mock import MagicMock, patch

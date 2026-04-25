@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Platform-agnostic messaging layer."""
 
 from .event_parser import parse_cli_event

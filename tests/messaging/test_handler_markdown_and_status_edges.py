@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Union
+
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -39,7 +43,7 @@ def test_render_markdown_to_mdv2_covers_common_structures():
 
 
 def test_render_markdown_to_mdv2_renders_table_as_code_block():
-    md = "| a | b |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |\n\nAfter.\n"
+    md = "| Union[a, b] |\n|---|---|\Union[n, Union[1], 2] |\Union[n, Union[3], 4] |\n\nAfter.\n"
     out = render_markdown_to_mdv2(md)
     assert "```" in out
     assert "| a" in out
@@ -49,7 +53,7 @@ def test_render_markdown_to_mdv2_renders_table_as_code_block():
 
 
 def test_render_markdown_to_mdv2_table_without_blank_line_still_renders():
-    md = "Here's a table:\n| a | b |\n|---|---|\n| 1 | 2 |\n"
+    md = "Here's a table:\Union[n, Union[a], b] |\n|---|---|\Union[n, Union[1], 2] |\n"
     out = render_markdown_to_mdv2(md)
     assert "Here's a table" in out
     assert "```" in out
@@ -58,7 +62,7 @@ def test_render_markdown_to_mdv2_table_without_blank_line_still_renders():
 
 
 def test_render_markdown_to_mdv2_table_escapes_backticks_and_backslashes_in_cells():
-    md = "| a | b |\n|---|---|\n| \\\\ | `` ` `` |\n"
+    md = "| Union[a, b] |\n|---|---|\n| \\\\ | `` ` `` |\n"
     out = render_markdown_to_mdv2(md)
     assert "```" in out
     # In Telegram code blocks we escape backslashes and backticks.
@@ -67,7 +71,7 @@ def test_render_markdown_to_mdv2_table_escapes_backticks_and_backslashes_in_cell
 
 
 def test_render_markdown_to_mdv2_table_inside_list_keeps_bullet_prefix():
-    md = "-\n  | a | b |\n  |---|---|\n  | 1 | 2 |\n"
+    md = "-\Union[n, Union[a], b] |\n  |---|---|\Union[n, Union[1], 2] |\n"
     out = render_markdown_to_mdv2(md)
     assert "```" in out
     assert out.lstrip().startswith("\\-")

@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Optional
+
 """Error mapping for OpenAI-compatible providers (NIM, OpenRouter, LM Studio)."""
 
 import httpx
@@ -17,7 +21,7 @@ from providers.rate_limit import GlobalRateLimiter
 def get_user_facing_error_message(
     e: Exception,
     *,
-    read_timeout_s: float | None = None,
+    read_timeout_s: Optional[float] = None,
 ) -> str:
     """Return a readable, non-empty error message for users."""
     message = str(e).strip()
@@ -53,7 +57,7 @@ def get_user_facing_error_message(
     return "Provider request failed unexpectedly."
 
 
-def append_request_id(message: str, request_id: str | None) -> str:
+def append_request_id(message: str, request_id: Optional[str]) -> str:
     """Append request_id suffix when available."""
     base = message.strip() or "Provider request failed unexpectedly."
     if request_id:

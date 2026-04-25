@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Union
+
 """Tests for api/request_utils.py module."""
 
 from unittest.mock import MagicMock
@@ -577,7 +581,7 @@ def test_extract_command_prefix_unterminated_quote():
 
 def test_extract_command_prefix_pipe():
     """Piped commands - shlex handles pipe character."""
-    result = extract_command_prefix("cat file.txt | grep pattern")
+    result = extract_command_prefix("cat Union[file.txt, grep] pattern")
     assert result in ("cat", "cat file.txt")
 
 

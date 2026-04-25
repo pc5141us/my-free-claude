@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Tests for Llama.cpp native Anthropic provider."""
 
 from unittest.mock import AsyncMock, MagicMock, patch

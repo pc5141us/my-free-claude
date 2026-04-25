@@ -1,6 +1,9 @@
+from __future__ import annotations
+
+from typing import Optional
+
 """Subprocess lifecycle helpers for local smoke servers."""
 
-from __future__ import annotations
 
 import os
 import socket
@@ -34,8 +37,8 @@ def find_free_port() -> int:
 def start_server(
     config: SmokeConfig,
     *,
-    env_overrides: dict[str, str] | None = None,
-    command: list[str] | None = None,
+    env_overrides: dict[str, Optional[str]] = None,
+    command: Optional[list[str]] = None,
     name: str = "server",
 ) -> Iterator[RunningServer]:
     port = find_free_port()

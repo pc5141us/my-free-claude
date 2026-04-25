@@ -1,7 +1,12 @@
+from __future__ import annotations
+
+
 """Pydantic models for Anthropic-compatible requests."""
 
-from enum import StrEnum
-from typing import Any, Literal
+from enum import Enum
+class StrEnum(str, Enum):
+    pass
+from typing import Union, Optional, Any, Literal
 
 from loguru import logger
 from pydantic import BaseModel, field_validator, model_validator
@@ -38,7 +43,7 @@ class ContentBlockToolUse(BaseModel):
 class ContentBlockToolResult(BaseModel):
     type: Literal["tool_result"]
     tool_use_id: str
-    content: str | list[Any] | dict[str, Any]
+    content: Union[str, Union[list[Any]], dict[str, Any], Any]
 
 
 class ContentBlockThinking(BaseModel):
@@ -56,22 +61,24 @@ class SystemContent(BaseModel):
 # =============================================================================
 class Message(BaseModel):
     role: Literal["user", "assistant"]
-    content: (
-        str
-        | list[
-            ContentBlockText
-            | ContentBlockImage
-            | ContentBlockToolUse
-            | ContentBlockToolResult
-            | ContentBlockThinking
+    content: Union[
+        str,
+        list[
+            Union[
+                ContentBlockText,
+                ContentBlockImage,
+                ContentBlockToolUse,
+                ContentBlockToolResult,
+                ContentBlockThinking
+            ]
         ]
-    )
-    reasoning_content: str | None = None
+    ]
+    reasoning_content: Optional[str] = None
 
 
 class Tool(BaseModel):
     name: str
-    description: str | None = None
+    description: Optional[str] = None
     input_schema: dict[str, Any]
 
 
@@ -84,21 +91,21 @@ class ThinkingConfig(BaseModel):
 # =============================================================================
 class MessagesRequest(BaseModel):
     model: str
-    max_tokens: int | None = None
+    max_tokens: Optional[int] = None
     messages: list[Message]
-    system: str | list[SystemContent] | None = None
-    stop_sequences: list[str] | None = None
-    stream: bool | None = True
-    temperature: float | None = None
-    top_p: float | None = None
-    top_k: int | None = None
-    metadata: dict[str, Any] | None = None
-    tools: list[Tool] | None = None
-    tool_choice: dict[str, Any] | None = None
-    thinking: ThinkingConfig | None = None
-    extra_body: dict[str, Any] | None = None
-    original_model: str | None = None
-    resolved_provider_model: str | None = None
+    system: Union[str, Optional[list[SystemContent]]] = None
+    stop_sequences: Optional[list[str]] = None
+    stream: Optional[bool] = True
+    temperature: Optional[float] = None
+    top_p: Optional[float] = None
+    top_k: Optional[int] = None
+    metadata: dict[str, Optional[Any]] = None
+    tools: Optional[list[Tool]] = None
+    tool_choice: dict[str, Optional[Any]] = None
+    thinking: Optional[ThinkingConfig] = None
+    extra_body: dict[str, Optional[Any]] = None
+    original_model: Optional[str] = None
+    resolved_provider_model: Optional[str] = None
 
     @model_validator(mode="after")
     def map_model(self) -> MessagesRequest:
@@ -120,10 +127,10 @@ class MessagesRequest(BaseModel):
 class TokenCountRequest(BaseModel):
     model: str
     messages: list[Message]
-    system: str | list[SystemContent] | None = None
-    tools: list[Tool] | None = None
-    thinking: ThinkingConfig | None = None
-    tool_choice: dict[str, Any] | None = None
+    system: Union[str, Optional[list[SystemContent]]] = None
+    tools: Optional[list[Tool]] = None
+    thinking: Optional[ThinkingConfig] = None
+    tool_choice: dict[str, Optional[Any]] = None
 
     @field_validator("model")
     @classmethod

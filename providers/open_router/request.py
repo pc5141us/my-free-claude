@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Request builder for OpenRouter provider."""
 
 from typing import Any

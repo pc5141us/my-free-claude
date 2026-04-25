@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 """Voice note transcription for messaging platforms.
 
 Supports:

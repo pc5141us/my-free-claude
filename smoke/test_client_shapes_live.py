@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+
+
 import pytest
 
 from smoke.lib.config import SmokeConfig, auth_headers

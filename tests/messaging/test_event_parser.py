@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 from messaging.event_parser import parse_cli_event
 
 
