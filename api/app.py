@@ -57,6 +57,12 @@ def _warn_if_process_auth_token(settings) -> None:
 async def lifespan(app: FastAPI):
     """Application lifespan manager."""
     settings = get_settings()
+    # Skip bot startup on Vercel to avoid timeout/crash
+    if os.environ.get("VERCEL"):
+        logger.info("Running on Vercel: Skipping background polling loop.")
+        yield
+        return
+
     logger.info("Starting Claude Code Proxy...")
     _warn_if_process_auth_token(settings)
 
