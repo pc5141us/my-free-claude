@@ -61,11 +61,9 @@ def _warn_if_process_auth_token(settings) -> None:
 async def lifespan(app: FastAPI):
     """Application lifespan manager."""
     settings = get_settings()
-    # Skip bot startup on Vercel to avoid timeout/crash
+    # On Vercel, we still initialize the platform but skip polling (handled in platform start)
     if os.environ.get("VERCEL"):
-        logger.info("Running on Vercel: Skipping background polling loop.")
-        yield
-        return
+        logger.info("Running on Vercel: Initializing platform for webhook support.")
 
     logger.info("Starting Claude Code Proxy...")
     _warn_if_process_auth_token(settings)
@@ -98,10 +96,19 @@ async def lifespan(app: FastAPI):
                 if settings.allowed_dir
                 else os.getcwd()
             )
-            os.makedirs(workspace, exist_ok=True)
+            # Use /tmp on Vercel for any writeable operations
+            if os.environ.get("VERCEL"):
+                workspace = "/tmp"
+                logger.info(f"Vercel: Using {workspace} as workspace")
+            else:
+                os.makedirs(workspace, exist_ok=True)
 
             # Session data stored in agent_workspace
-            data_path = os.path.abspath(settings.claude_workspace)
+            data_path = (
+                "/tmp/agent_workspace"
+                if os.environ.get("VERCEL")
+                else os.path.abspath(settings.claude_workspace)
+            )
             os.makedirs(data_path, exist_ok=True)
 
             api_url = f"http://{settings.host}:{settings.port}/v1"

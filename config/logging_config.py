@@ -75,8 +75,8 @@ def configure_logging(log_file: str, *, force: bool = False) -> None:
     # Remove default loguru handler (writes to stderr)
     logger.remove()
 
-    # On Vercel, we only use stderr logging and skip file operations
-    if os.environ.get("VERCEL"):
+    # On Vercel or similar read-only environments, we only use stderr logging
+    if os.environ.get("VERCEL") or os.environ.get("NOW_REGION") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
         # Add stderr sink with our custom formatter
         import sys
         logger.add(
@@ -86,8 +86,11 @@ def configure_logging(log_file: str, *, force: bool = False) -> None:
         )
         return
 
-    # Truncate log file on fresh start for clean debugging
-    Path(log_file).write_text("")
+    # Truncate log file on fresh start for clean debugging (skip if read-only)
+    try:
+        Path(log_file).write_text("")
+    except OSError:
+        logger.warning(f"Could not truncate log file {log_file} (read-only filesystem?)")
 
     # Add file sink: JSON lines, DEBUG level, context vars at top level
     logger.add(

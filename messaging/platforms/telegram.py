@@ -154,10 +154,12 @@ class TelegramPlatform(MessagingPlatform):
                 await self._application.start()
 
                 # Start polling (non-blocking way for integration)
-                if self._application.updater:
+                if not os.environ.get("VERCEL") and self._application.updater:
                     await self._application.updater.start_polling(
                         drop_pending_updates=False
                     )
+                elif os.environ.get("VERCEL"):
+                    logger.info("Telegram: Polling disabled on Vercel (use webhooks)")
 
                 self._connected = True
                 break
@@ -468,6 +470,14 @@ class TelegramPlatform(MessagingPlatform):
     def is_connected(self) -> bool:
         """Check if connected."""
         return self._connected
+
+    async def handle_webhook_update(self, update_json: dict[str, Any]) -> None:
+        """Process an update from a webhook."""
+        if not self._application:
+            raise RuntimeError("Telegram application not initialized")
+
+        update = Update.de_json(update_json, self._application.bot)
+        await self._application.process_update(update)
 
     async def _on_start_command(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE

@@ -228,3 +228,26 @@ async def stop_cli(request: Request, _auth=Depends(require_api_key)):
     count = await handler.stop_all_tasks()
     logger.info("STOP_CLI: source=handler cancelled_count={}", count)
     return {"status": "stopped", "cancelled_count": count}
+
+
+@router.post("/webhook/telegram")
+async def telegram_webhook(request: Request):
+    """Handle incoming updates from Telegram via Webhook."""
+    payload = await request.json()
+    platform = getattr(request.app.state, "messaging_platform", None)
+
+    if not platform:
+        logger.warning("WEBHOOK_ERR: Messaging platform not initialized")
+        return {"status": "error", "message": "Platform not initialized"}
+
+    if platform.name != "telegram":
+        logger.warning(f"WEBHOOK_ERR: Received Telegram update but platform is {platform.name}")
+        return {"status": "error", "message": "Incorrect platform"}
+
+    try:
+        # Process the update asynchronously
+        await platform.handle_webhook_update(payload)
+        return {"status": "ok"}
+    except Exception as e:
+        logger.error(f"WEBHOOK_ERR: {e}")
+        return {"status": "error", "message": str(e)}
