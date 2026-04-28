@@ -472,12 +472,25 @@ class TelegramPlatform(MessagingPlatform):
         return self._connected
 
     async def handle_webhook_update(self, update_json: dict[str, Any]) -> None:
-        """Process an update from a webhook."""
+        """Process an update from a webhook synchronously for Serverless environments."""
         if not self._application:
             raise RuntimeError("Telegram application not initialized")
 
         update = Update.de_json(update_json, self._application.bot)
-        await self._application.process_update(update)
+        
+        # On Vercel, background tasks freeze after HTTP response. 
+        # We must process the update synchronously by calling our handlers directly.
+        try:
+            if update.message:
+                if update.message.text:
+                    if update.message.text.startswith("/start"):
+                        await self._on_start_command(update, None)
+                    else:
+                        await self._on_telegram_message(update, None)
+                elif update.message.voice:
+                    await self._on_telegram_voice(update, None)
+        except Exception as e:
+            logger.error(f"Error processing webhook update: {e}")
 
     async def _on_start_command(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
