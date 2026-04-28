@@ -479,9 +479,12 @@ class TelegramPlatform(MessagingPlatform):
         update = Update.de_json(update_json, self._application.bot)
         
         # On Vercel, background tasks freeze after HTTP response. 
-        # We must process the update synchronously by calling our handlers directly.
+        # We must process the update synchronously by calling our handlers directly,
+        # and then waiting for the node processing to complete.
         try:
+            node_id = None
             if update.message:
+                node_id = str(update.message.message_id)
                 if update.message.text:
                     if update.message.text.startswith("/start"):
                         await self._on_start_command(update, None)
@@ -489,6 +492,20 @@ class TelegramPlatform(MessagingPlatform):
                         await self._on_telegram_message(update, None)
                 elif update.message.voice:
                     await self._on_telegram_voice(update, None)
+            
+            # Wait for background processing to finish to prevent Vercel from freezing
+            if node_id and self._message_handler:
+                handler_instance = getattr(self._message_handler, "__self__", None)
+                if handler_instance and hasattr(handler_instance, "tree_queue"):
+                    from ..trees.queue_manager import MessageState
+                    node = handler_instance.tree_queue.get_node(node_id)
+                    if node:
+                        logger.info(f"Vercel: Waiting for node {node_id} to complete processing...")
+                        for _ in range(110): # wait up to 55 seconds (Vercel max is usually 60s or 10s depending on tier)
+                            if node.state in (MessageState.COMPLETED, MessageState.ERROR):
+                                break
+                            await asyncio.sleep(0.5)
+                        logger.info(f"Vercel: Finished waiting for node {node_id}")
         except Exception as e:
             logger.error(f"Error processing webhook update: {e}")
 
