@@ -9,5 +9,5 @@ python-telegram-bot>=22.7
 discord.py>=2.7.1
 pydantic-settings>=2.14.0
 openai>=2.32.0
-loguru>=0.7.0
+loguru>=0.7.3
 aiohttp>=3.13.4
